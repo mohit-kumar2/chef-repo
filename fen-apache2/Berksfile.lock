@@ -1,0 +1,25 @@
+DEPENDENCIES
+  apache2
+    path: ../apache2
+  fen-apache2
+    path: .
+    metadata: true
+
+GRAPH
+  apache2 (2.0.0)
+    iptables (>= 0.0.0)
+    logrotate (>= 0.0.0)
+    pacman (>= 0.0.0)
+  apt (5.0.1)
+    compat_resource (>= 12.16.3)
+  compat_resource (12.16.3)
+  cron (3.0.0)
+  fen-apache2 (0.1.0)
+    apache2 (>= 0.0.0)
+    apt (>= 0.0.0)
+    cron (>= 0.0.0)
+  iptables (3.0.1)
+    compat_resource (>= 12.14.3)
+  logrotate (2.1.0)
+    compat_resource (>= 0.0.0)
+  pacman (1.1.1)
