@@ -1,0 +1,5 @@
+# Define an access log for VirtualHosts that don't define their own logfile
+LogFormat "%h %{local}p %u %t \"%r\" %>s %B \"%{Referer}i\" \"%{User-Agent}i\" %{Host}i %v %D %{Apache}C \"%{Accept-Language}i\" \"%{X-Forwarded-For}i\" %{X-Amz-Cf-Id}i" combined
+CustomLog "|/usr/bin/rotatelogs -l <%= node['apache']['log_dir'] %>/other_vhosts_access.%Y%m%d 86400" combined
+
+# vim: syntax=apache ts=4 sw=4 sts=4 sr noet

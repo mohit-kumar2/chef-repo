@@ -1,0 +1,16 @@
+<VirtualHost *:80>
+  ServerName <%= @params[:server_name] %>
+  DocumentRoot  <%= @params[:docroot] %>
+  # Possible values include: debug, info, notice, warn, error, crit, alert, emerg.
+  LogLevel warn
+  ErrorLog "<%= node['apache']['log_pipe'] %><%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>.<%= node['apache']['error_log'] %><%= node['apache']['log_pipe_rotation'] %>"
+
+  CustomLog "<%= node['apache']['log_pipe'] %><%= node['apache']['log_dir'] %>/<%= @params[:server_name] %>.<%= node['apache']['access_log'] %><%= node['apache']['log_pipe_rotation'] %>" combined
+
+  <Directory <%= @params[:docroot] %>>
+        Options Indexes FollowSymLinks
+        AllowOverride All
+        Require all granted
+  </Directory>
+
+</VirtualHost>

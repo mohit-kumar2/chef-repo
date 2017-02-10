@@ -1,0 +1,61 @@
+<%- if (@config[:major_version] || @varnish.fetch(:installed_version)) >= 4.0 %>
+vcl 4.0;
+<%- end %>
+backend default {
+        .host = "<%= @config.fetch(:backend_host) %>";
+        .port = "<%= @config.fetch(:backend_port) %>";
+        .connect_timeout = 300s;
+        .first_byte_timeout = 300s;
+        .between_bytes_timeout = 300s;
+}
+
+acl purge {
+  "localhost";
+  "127.0.0.1";
+}
+
+sub vcl_recv{
+  if (req.url ~ "^/status\.php$" ||
+      req.url ~ "^/update\.php" ||
+      req.url ~ "^/install\.php" ||
+      req.url ~ "^/apc\.php$" ||
+      req.url ~ "^/admin" ||
+      req.url ~ "^/admin/.*$" ||
+      req.url ~ "^/user" ||
+      req.url ~ "^/user/.*$" ||
+      req.url ~ "^/users/.*$" ||
+      req.url ~ "^/info/.*$" ||
+      req.url ~ "^/flag/.*$" ||
+      req.url ~ "^.*/ajax/.*$" ||
+      req.url ~ "^.*/ahah/.*$" ||
+      req.url ~ "^/system/files/.*$") {
+
+    return (pass);
+  }
+ 
+  if (req.url ~ "(?i)\.(pdf|asc|dat|txt|doc|xls|ppt|tgz|csv|png|gif|jpeg|jpg|ico|swf|css|js)(\?.*)?$") {
+    unset req.http.Cookie;
+  }
+
+    if (req.http.Cookie) {
+    set req.http.Cookie = ";" + req.http.Cookie;
+    set req.http.Cookie = regsuball(req.http.Cookie, "; +", ";");
+    set req.http.Cookie = regsuball(req.http.Cookie, ";(SESS[a-z0-9]+|SSESS[a-z0-9]+|NO_CACHE)=", "; \1=");
+    set req.http.Cookie = regsuball(req.http.Cookie, ";[^ ][^;]*", "");
+    set req.http.Cookie = regsuball(req.http.Cookie, "^[; ]+|[; ]+$", "");
+
+    if (req.http.Cookie == "") {
+      unset req.http.Cookie;
+    }
+    else {
+      return (pass);
+    }
+  }
+
+ if (req.method == "PURGE") {
+    if (!client.ip ~ purge) {
+      return (synth(405, "Not allowed."));
+    }
+    return (purge);
+  }
+}
