@@ -1,9 +1,0 @@
-<IfModule mod_rewrite.c>
-  RewriteEngine on
-<% if node['apache']['version'] == '2.2' -%>
-  RewriteRule ^/server-status - [L]
-<% elsif node['apache']['version'] == '2.4' -%>
-  RewriteCond %{REQUEST_URI} /server-status
-  RewriteRule ^ - [END]
-<% end -%>
-</IfModule>
